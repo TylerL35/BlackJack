@@ -3,8 +3,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
-import javax.smartcardio.Card;
-
 public class blackjackdealer {
 	
 	private ArrayList<deck> d = new ArrayList<deck>();
@@ -17,7 +15,7 @@ public class blackjackdealer {
 	card p1;
 	card p2;
 	card d1;
-	Card d2;
+	card d2;
 	
 	public blackjackdealer(int decks, int buyIn)
 	{
