@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
+import javax.smartcardio.Card;
+
 public class blackjackdealer {
 	
 	private ArrayList<deck> d = new ArrayList<deck>();
@@ -15,7 +17,7 @@ public class blackjackdealer {
 	card p1;
 	card p2;
 	card d1;
-	card d2;
+	Card d2;
 	
 	public blackjackdealer(int decks, int buyIn)
 	{
@@ -154,6 +156,18 @@ public class blackjackdealer {
 		}
 		else
 		{
+			if (d1.getValue() == 1)
+			{
+				System.out.println("Dealer has an ace. Insurance? 1-yes, 2-no");
+				int r = z.nextInt();
+				if (r == 1)
+				{
+					if (d2.getValue() == 1)
+					{
+						
+					}
+				}
+			}
 			if (dscore == 11 && (d1.getValue() == 1 || d2.getValue() == 1))
 			{
 				dscore = 21;
