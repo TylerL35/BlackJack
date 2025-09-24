@@ -232,7 +232,7 @@ public class blackjackdealer {
 		
 		while (pscore < 21)
 		{
-			System.out.println("\nPlayer Score: " + pscore);
+			System.out.println("\nPlayer Score: " + pscore + ", Dealer Card: " + d1.toString());
 			if (softpscore != pscore && softpscore <= 21)
 			{
 				System.out.println("Soft score: " + softpscore);
@@ -261,12 +261,24 @@ public class blackjackdealer {
 					bal -= betSize;
 					return false;
 				}
+				if (pscore == 21)
+				{
+					System.out.println("Player Score is 21");
+					break;
+				}
+				else if (softpscore == 21)
+				{
+					System.out.println("Player Score is 21");
+					pscore = softpscore;
+					break;
+				}
 			}
 			else
 			{
 				if (softpscore > pscore && softpscore <= 21)
 				{
 					pscore = softpscore;
+					break;
 				}
 				System.out.println("\nPlayer Score: " + pscore);
 				if (pscore > 21)
@@ -278,11 +290,22 @@ public class blackjackdealer {
 				else if	(pscore == 21)
 				{
 					System.out.println("Player Score is 21");
+					break;
+				}
+				else if (softpscore == 21)
+				{
+					System.out.println("Player Score is 21");
+					pscore = softpscore;
+					break;
+				}
+				else
+				{
+					break;
 				}
 			}
 		}
 		
-		System.out.println("Dealer 2nd card: " + d2.toString());
+		System.out.println("Dealer 1st Card: " + d1.toString() + ", Dealer 2nd card: " + d2.toString());
 		
 		if (dscore > pscore)
 		{

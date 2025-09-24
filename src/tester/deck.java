@@ -38,6 +38,10 @@ public class deck {
 	
 	public card drawCard(boolean readOut)
 	{
+		if (inDeck.size() == 0)
+		{
+			System.out.println("DECK EMPTY");
+		}
 		card temp = inDeck.get(0);
 		if(readOut)
 			System.out.println(temp.toString());
