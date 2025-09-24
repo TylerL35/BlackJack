@@ -17,6 +17,18 @@ public class card {
 		return value;
 	}
 	
+	public int getScoreValue()
+	{
+		if (value >= 1 && value < 11)
+		{
+			return value;
+		}
+		else
+		{
+			return 10;
+		}
+	}
+	
 	public int getSuite()
 	{
 		return suite;

@@ -5,17 +5,24 @@ import java.util.Scanner;
 public class Main {
 	public static void main(String[] args)
 	{
-		Scanner s = new Scanner(System.in);
+		
 		
 		System.out.println("How many decks?");
 		
 
-		blackjackdealer bjd = new blackjackdealer(s.nextInt(), 100);
+		Scanner s = new Scanner(System.in);
+		blackjackdealer bjd = new blackjackdealer(s.nextInt(), 100, s);
 		
 		while(bjd.isActive())
 		{
-			System.out.println("Actions: A-draw, B-shuffle, C-play round\n");
-			String response = s.next();
+			
+			String response = new String();
+			
+			
+			System.out.println("Actions: A-draw, B-shuffle, C-play round");
+			response = s.next();
+			
+			
 			if (response.equalsIgnoreCase("A"))
 			{
 				bjd.drawCard(true);
@@ -31,11 +38,16 @@ public class Main {
 				else
 					bjd.dealRound(1);
 			}
-					
+			
+			
 			System.out.println("--------------------");
 		}
 		
 		
 		s.close();
+		
 	}
+		
+		
+	
 }

@@ -11,16 +11,19 @@ public class blackjackdealer {
 	private int dscore;
 	private int pscore;
 	private int bal;
+	private int softpscore;
+	private int softdscore;
+	Scanner s;
 	
 	card p1;
 	card p2;
 	card d1;
 	card d2;
 	
-	public blackjackdealer(int decks, int buyIn)
+	public blackjackdealer(int decks, int buyIn, Scanner s)
 	{
 		this.decks = decks;
-		
+		this.s = s;
 		for (int i = 0; i < decks; i++)
 		{
 			d.add(i, new deck());
@@ -28,6 +31,7 @@ public class blackjackdealer {
 		active = true;
 		dscore = 0;
 		pscore = 0;
+		bal = buyIn;
 	}
 	
 	public int getDecks()
@@ -94,10 +98,11 @@ public class blackjackdealer {
 	
 	public boolean dealRound(int betSize)
 	{
-		Scanner z = new Scanner(System.in);
 		System.out.println("Balance: " + bal);
 		pscore = 0;
 		dscore = 0;
+		softpscore = 0;
+		softdscore = 0;
 		
 		System.out.println("dealer burns 1 card \n");
 		drawCard(false);
@@ -140,7 +145,7 @@ public class blackjackdealer {
 				dscore = 21;
 				System.out.println("Dealer 2nd card: " + d2.toString());
 				System.out.println("Push");
-				z.close();
+				s.close();
 				return false;
 			}
 			else
@@ -148,7 +153,7 @@ public class blackjackdealer {
 				System.out.println("Dealer 2nd card: " + d2.toString());
 				System.out.println("BLACKJACK");
 				bal += betSize;
-				z.close();
+				s.close();
 				return true;
 			}
 		}
@@ -157,12 +162,18 @@ public class blackjackdealer {
 			if (d1.getValue() == 1)
 			{
 				System.out.println("Dealer has an ace. Insurance? 1-yes, 2-no");
-				int r = z.nextInt();
+				int r = s.nextInt();
 				if (r == 1)
 				{
-					if (d2.getValue() == 1)
+					bal -= betSize;
+					if (d2.getScoreValue() == 10)
 					{
-						
+						System.out.println("Dealer has Blackjack");
+						bal += betSize;
+					}
+					else
+					{
+						System.out.println("No blackjack for dealer.");
 					}
 				}
 			}
@@ -172,24 +183,44 @@ public class blackjackdealer {
 				bal -= betSize;
 				System.out.println("Dealer 2nd card: " + d2.toString());
 				System.out.println("Dealer Blackjack");
-				z.close();
+				s.close();
 				return false;
 			}
 			
+			softpscore = pscore;
+			softdscore  = dscore;
+			
 			if (p1.getValue() == 1)
 			{
-				System.out.println("Your first card is an Ace! Type 1 to keep as one, 2 to change it to eleven");
-				if (z.nextInt() == 2)
-					pscore += 10;
+	
+				pscore++;
+				softpscore += 11;	
 			}
+			
 			
 			if (p2.getValue() == 1)
 			{
 				if (pscore < 11)
 				{
-					System.out.println("Your second card is an Ace! Type 1 to keep as one, 2 to change it to eleven");
-					if (z.nextInt() == 2)
-						pscore += 10;
+					pscore++;
+					softpscore += 11;
+				}		
+			}
+			
+			if (d1.getValue() == 1)
+			{
+	
+				dscore++;
+				softdscore += 11;	
+			}
+			
+			
+			if (d2.getValue() == 1)
+			{
+				if (dscore < 11)
+				{
+					dscore++;
+					softdscore += 11;
 				}		
 			}
 		}
@@ -202,8 +233,12 @@ public class blackjackdealer {
 		while (pscore < 21)
 		{
 			System.out.println("\nPlayer Score: " + pscore);
+			if (softpscore != pscore && softpscore <= 21)
+			{
+				System.out.println("Soft score: " + softpscore);
+			}
 			System.out.println("1 - Hit, 2 - Stand");
-			if (z.nextInt() == 1)
+			if (s.nextInt() == 1)
 			{
 				System.out.println("Your card is: ");
 				temporary = drawCard(true);
@@ -211,118 +246,117 @@ public class blackjackdealer {
 				{
 					if (pscore < 11)
 					{
-						System.out.println("Your card is an Ace! Type 1 to keep as one, 2 to change it to eleven");
-						if (z.nextInt() == 2)
-							pscore += 10;
+						pscore++;
+						if (softpscore < 11)
+						{
+							softpscore += 11;
+						}
 					}		
 				}
-				pscore += temporary.getValue();
+				else
+					pscore += temporary.getValue();
 				if (pscore > 21)
 				{
 					System.out.println("BUSTED");
 					bal -= betSize;
-					z.close();
 					return false;
-				}
-				else if (pscore == 21)
-				{
-					bal += betSize;
-					z.close();
-					return true;
 				}
 			}
 			else
+			{
+				if (softpscore > pscore && softpscore <= 21)
+				{
+					pscore = softpscore;
+				}
 				System.out.println("\nPlayer Score: " + pscore);
-				break;
-			
+				if (pscore > 21)
+				{
+					System.out.println("BUSTED");
+					bal -= betSize;
+					return false;
+				}
+				else if	(pscore == 21)
+				{
+					System.out.println("Player Score is 21");
+				}
+			}
 		}
-		z.close();
 		
 		System.out.println("Dealer 2nd card: " + d2.toString());
 		
 		if (dscore > pscore)
 		{
 			bal -= betSize;
+			System.out.println("Dealer score: " + dscore);
+			return false;
+		}
+		else if (softdscore > pscore)
+		{
+			bal -= betSize;
+			System.out.println("Dealer score: " + softdscore);
 			return false;
 		}
 		
-		ArrayList<Integer> permutations = new ArrayList<Integer>();
-		ArrayList<card> dealerCards = new ArrayList<card>();
-		
-		dealerCards.add(d1);
-		dealerCards.add(d2);
-		
-		permutations.add(dscore);
-		
-		
-		if (d1.getValue() == 1)
+		while (dscore < 17 && softdscore < 17)
 		{
-			permutations.add(dscore + 10);
-		}
-		
-		if (d2.getValue() == 1)
-		{
-			if (pscore < 11)
+			System.out.println("Dealer card is: ");
+			temporary = drawCard(true);
+			if (temporary.getValue() == 1)
 			{
-				permutations.add(dscore + 10);
+				if (dscore < 11)
+				{
+					dscore++;
+					if (softdscore < 11)
+					{
+						softpscore += 11;
+					}
+				}		
 			}
-			
-		}
-		
-		boolean lessThanSeventeen = true;
-
-		while (lessThanSeventeen)
-		{
-			
-			for (int i = 0; i < permutations.size(); i++)
+			else
+				dscore += temporary.getValue();
+			if (dscore > 21)
 			{
-				if (permutations.get(i) > pscore)
-				{
-					System.out.println("Dealer score: " + permutations.get(i));
-					dscore = permutations.get(i);	
-					bal -= betSize;
-					return false;
-				}
-				
-				if (permutations.get(i) >= 17)
-				{
-					lessThanSeventeen = false;
-					
-					int max = permutations.get(i);
-					for (int j = 0; j < permutations.size(); j++)
-					{
-						if (permutations.get(j) > max)
-							max = permutations.get(j);
-					}
-					
-					System.out.println("Dealer score: " + max);
-					dscore = max;	
-					if (dscore > pscore)
-					{
-						bal -= betSize;
-						System.out.println("Dealer wins");
-						return false;
-					}
-					else if (dscore == pscore)
-					{
-						System.out.println("Push");
-						return false;
-					}
-					else
-					{
-						System.out.println("Player wins");
-						bal += betSize;
-					}
-				}
+				System.out.println("DEALER BUSTED");
+				bal += betSize;
+				return true;
+			}
+			else if (dscore == 21)
+			{
+				System.out.println("DEALER HAS 21");	
 				
 			}
-			
-			
-			
-			
-			
+			else if (softdscore == 21)
+			{
+				dscore = softdscore;
+				System.out.println("DEALER HAS 21");	
+			}
 		}
-		return true;
+		
+		if (softdscore > dscore && softdscore <= 21)
+		{
+			dscore = softdscore;
+		}
+		System.out.println("\nDeaker Score: " + dscore);
+		
+		
+		if (dscore == pscore)
+		{
+			System.out.println("PUSH");
+			return false;
+		}
+		else if (dscore > pscore)
+		{
+			System.out.println("DEALER WINS");
+			bal+=betSize;
+			return false;
+		}
+		else
+		{
+			System.out.println("YOU WIN");
+			bal+=betSize;
+			return true;
+		}
+		
 	
 	}
 
